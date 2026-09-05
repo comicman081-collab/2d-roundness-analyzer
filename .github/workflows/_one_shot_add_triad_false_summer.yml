@@ -1,0 +1,42 @@
+name: One-shot add TRIAD RUN and FALSE SUMMER portfolio links
+
+on:
+  push:
+    paths:
+      - '.github/workflows/_one_shot_add_triad_false_summer.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-portfolio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Update project metadata and live links
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('jh-project-archive/index.html')
+          text=p.read_text(encoding='utf-8')
+          old="{id:'false-summer',title:'FALSE SUMMER',type:'game',typeLabel:'GAME',status:'WIP',statusClass:'status',version:'Current Build',subtitle:'Visual Novel',description:'기억, 진실, 선택을 따라가는 비주얼 노벨. 시나리오와 연출 빌드를 계속 확장 중입니다.',thumb:'thumb-false',preview:'https://comicman081.itch.io/false-summer-teen15-test',notes:'웹 체험판은 외부 호스트 정책에 따라 iframe이 제한될 수 있습니다.',screens:'키 비주얼 · 대화 UI · 시네마틱 인트로'}"
+          new="{id:'false-summer',title:'FALSE SUMMER',type:'game',typeLabel:'GAME',status:'ITCH.IO',statusClass:'release',version:'Teen 15 Test',subtitle:'Mystery Romance Visual Novel',description:'추리와 연애 요소를 중심으로 기억·진실·선택을 따라가는 비주얼 노벨. itch.io에 공개한 테스트 빌드를 포트폴리오에서 바로 확인할 수 있습니다.',thumb:'thumb-false',preview:'https://comicman081.itch.io/false-summer-teen15-test',notes:'itch.io 공개 테스트 페이지 연결. 브라우저의 iframe 정책으로 내부 재생이 제한되면 외부 페이지에서 열어 확인합니다.',screens:'키 비주얼 · 대화 UI · 시네마틱 인트로'}"
+          if old not in text: raise SystemExit('FALSE SUMMER anchor missing')
+          text=text.replace(old,new,1)
+          old="{id:'triad-run',title:'TRIAD RUN',type:'game',typeLabel:'GAME',status:'WIP',statusClass:'status',version:'Development',subtitle:'Combat Project',description:'모바일 전투와 HUD, 캐릭터·몬스터 액션을 반복 개선하고 있는 게임 프로젝트.',thumb:'thumb-triad',preview:'',notes:'현재 공개 Web build를 연결하지 않았습니다.',screens:'Battle · HUD · Ultimate'}"
+          new="{id:'triad-run',title:'TRIAD RUN',type:'game',typeLabel:'GAME',status:'WEB',statusClass:'release',version:'GitHub Pages',subtitle:'Run-and-Gun Shooter',description:'빠른 이동과 사격을 중심으로 플레이하는 런앤건 슈팅 게임. GitHub Pages에 공개된 실제 웹 빌드를 포트폴리오에서 바로 실행합니다.',thumb:'thumb-triad',preview:'https://comicman081-collab.github.io/TRIAD-RUN/',notes:'GitHub 저장소 comicman081-collab/TRIAD-RUN의 공개 Pages 빌드 연결.',screens:'Run · Gunplay · Combat · Stage'}"
+          if old not in text: raise SystemExit('TRIAD RUN anchor missing')
+          text=text.replace(old,new,1)
+          p.write_text(text,encoding='utf-8')
+          PY
+      - name: Commit portfolio project links
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add jh-project-archive/index.html
+          git commit -m 'portfolio: connect TRIAD RUN and FALSE SUMMER builds [skip actions]'
+          git push origin HEAD:main
