@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2D Roundness Analyzer v3.4.1</title>
+<style>
+html,body{height:100%;margin:0;background:#091018;color:#eef5fb;font-family:Inter,Pretendard,"Noto Sans KR","Malgun Gothic",Arial,sans-serif}
+body{display:grid;place-items:center}.card{width:min(560px,calc(100vw - 40px));padding:28px;border:1px solid #314658;border-radius:16px;background:#14202b;box-shadow:0 20px 70px rgba(0,0,0,.35)}
+h1{font-size:20px;margin:0 0 12px}.muted{color:#9fb2c4;font-size:13px;line-height:1.6}.bar{height:8px;margin-top:18px;border-radius:99px;background:#263646;overflow:hidden}.bar>div{height:100%;width:0;background:#59d6c0;transition:width .15s}.error{color:#ff9eaa;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div class="card"><h1>2D 원형률·원형성 정밀 측정기 v3.4.1</h1><div id="status" class="muted">검증된 배포 파일을 불러오는 중…</div><div class="bar"><div id="bar"></div></div></div>
+<script>
+'use strict';
+const PART_COUNT=13;
+const EXPECTED_SHA256='d8580124a60e32343ccdf1d0d4075f374e1a304830d37b7b6de7618b1cc243fc';
+const statusEl=document.getElementById('status');
+const barEl=document.getElementById('bar');
+const setProgress=(text,pct)=>{statusEl.textContent=text;barEl.style.width=`${Math.max(0,Math.min(100,pct))}%`;};
+const hex=buffer=>Array.from(new Uint8Array(buffer),b=>b.toString(16).padStart(2,'0')).join('');
+function decodeBase64(text){
+  const clean=text.replace(/\s+/g,'');
+  const binary=atob(clean),out=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)out[i]=binary.charCodeAt(i);
+  return out;
+}
+async function gunzip(bytes){
+  if(typeof DecompressionStream!=='function')throw new Error('이 브라우저는 gzip DecompressionStream을 지원하지 않습니다. 최신 Chrome/Edge/Firefox/Safari에서 열어 주세요.');
+  const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+(async()=>{
+  const parts=[];
+  for(let i=0;i<PART_COUNT;i++){
+    const id=String(i).padStart(2,'0');
+    setProgress(`배포 데이터 확인 중… ${i+1}/${PART_COUNT}`,((i+.4)/PART_COUNT)*60);
+    const response=await fetch(`release/parts/part${id}.txt?v=341`,{cache:'no-store'});
+    if(!response.ok)throw new Error(`배포 데이터 part${id} 로드 실패: HTTP ${response.status}`);
+    parts.push((await response.text()).trim());
+  }
+  setProgress('원본 파일 복원 중…',68);
+  const htmlBytes=await gunzip(decodeBase64(parts.join('')));
+  setProgress('SHA-256 무결성 검증 중…',82);
+  const actual=hex(await crypto.subtle.digest('SHA-256',htmlBytes));
+  if(actual!==EXPECTED_SHA256)throw new Error(`무결성 검증 실패\nexpected ${EXPECTED_SHA256}\nactual   ${actual}`);
+  const source=new TextDecoder('utf-8',{fatal:true}).decode(htmlBytes);
+  setProgress('검증 완료 · 실행 중…',100);
+  document.open('text/html','replace');
+  document.write(source);
+  document.close();
+})().catch(error=>{
+  console.error(error);
+  statusEl.classList.add('error');
+  statusEl.textContent=`실행하지 않았습니다.\n${error?.message||error}`;
+  barEl.style.width='100%';
+});
+</script>
+</body>
+</html>
