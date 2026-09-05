@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jh-project-archive",
+  "compatibility_date": "2026-09-05",
+  "main": "worker.js",
+  "assets": {
+    "directory": "../jh-project-archive-site",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/full/*", "/preview/*"],
+    "not_found_handling": "single-page-application"
+  }
+}
