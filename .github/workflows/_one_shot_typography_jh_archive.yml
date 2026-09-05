@@ -1,0 +1,71 @@
+name: One-shot JH Archive typography refinement
+
+on:
+  push:
+    paths:
+      - '.github/workflows/_one_shot_typography_jh_archive.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  typography:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Refine JH Project Archive typography
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('jh-project-archive/index.html')
+          s=p.read_text(encoding='utf-8')
+          replacements={
+            ':root{--b:#050b12;--p:#0a1622;--l:#19384e;--t:#eef8ff;--m:#8ca6b8;--c:#33dcff;--v:#806cff;--g:#4cf0b0}': ':root{--b:#050b12;--p:#0a1622;--l:#19384e;--t:#eef8ff;--m:#8ca6b8;--c:#33dcff;--v:#806cff;--g:#4cf0b0;--font-body:"Segoe UI Variable Text","Segoe UI","Noto Sans KR","Malgun Gothic",Arial,sans-serif;--font-display:"Segoe UI Variable Display","Segoe UI","Noto Sans KR","Malgun Gothic",Arial,sans-serif}',
+            'body{margin:0;background:radial-gradient(circle at 70% -20%,#163b55 0,#07111a 34%,#03070c 82%);color:var(--t);font:14px Inter,system-ui,Segoe UI,sans-serif;min-height:100vh}': 'body{margin:0;background:radial-gradient(circle at 70% -20%,#163b55 0,#07111a 34%,#03070c 82%);color:var(--t);font-family:var(--font-body);font-size:14px;font-weight:400;letter-spacing:-.01em;line-height:1.5;font-kerning:normal;font-optical-sizing:auto;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;min-height:100vh}',
+            '.brand{font-size:20px;font-weight:900;letter-spacing:.17em}': '.brand{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:.055em}',
+            '.brand small{display:block;color:#55748d;font-size:8px;letter-spacing:.34em;margin-top:7px}': '.brand small{display:block;color:#6f899d;font-family:var(--font-body);font-size:9px;font-weight:600;letter-spacing:.13em;margin-top:7px}',
+            '.nav button,.filter,.tab{border:0;background:none;color:#8da6b8;font-weight:800;font-size:11px;letter-spacing:.12em;cursor:pointer}': '.nav button,.filter,.tab{border:0;background:none;color:#8da6b8;font-family:var(--font-body);font-weight:700;font-size:11px;letter-spacing:.035em;cursor:pointer}',
+            '.login{border:1px solid #284a60;background:#0b1824;color:#dff7ff;border-radius:10px;padding:10px 15px;font-weight:800;cursor:pointer}': '.login{border:1px solid #284a60;background:#0b1824;color:#dff7ff;border-radius:10px;padding:10px 15px;font-weight:700;letter-spacing:.015em;cursor:pointer}',
+            '.tag{display:inline-block;border:1px solid #2d5876;background:#0a1e30;border-radius:7px;padding:5px 8px;font-size:9px;font-weight:900;letter-spacing:.14em;color:#a6e7ff}': '.tag{display:inline-block;border:1px solid #2d5876;background:#0a1e30;border-radius:7px;padding:5px 8px;font-size:9px;font-weight:700;letter-spacing:.055em;color:#a6e7ff}',
+            '.copy h1{font-size:52px;letter-spacing:.1em;margin:18px 0 5px}': '.copy h1{font-family:var(--font-display);font-size:52px;font-weight:700;letter-spacing:.025em;line-height:1.08;margin:18px 0 5px}',
+            '.primary,.ghost{border-radius:9px;padding:13px 19px;font-size:11px;font-weight:900;letter-spacing:.06em;cursor:pointer}': '.primary,.ghost{border-radius:9px;padding:13px 19px;font-family:var(--font-body);font-size:11px;font-weight:700;letter-spacing:.02em;cursor:pointer}',
+            'font-size:10px;letter-spacing:.22em;line-height:1.7;font-weight:900': 'font-size:10px;letter-spacing:.1em;line-height:1.7;font-weight:700',
+            '.count{font-size:10px;letter-spacing:.16em;color:#66849b}': '.count{font-size:10px;font-weight:600;letter-spacing:.06em;color:#7893a7}',
+            '.badge{font-size:8px;font-weight:900;letter-spacing:.1em;': '.badge{font-size:9px;font-weight:700;letter-spacing:.035em;',
+            '.body h3{font-size:18px;margin:11px 0 4px}': '.body h3{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.01em;margin:11px 0 4px}',
+            '.body .meta{font-size:10px;color:#69b9e1}': '.body .meta{font-size:11px;font-weight:500;letter-spacing:0;color:#74bfe3}',
+            '.panel h2{font-size:34px;margin:10px 0}': '.panel h2{font-family:var(--font-display);font-size:34px;font-weight:700;letter-spacing:-.015em;line-height:1.15;margin:10px 0}',
+            '.info b{display:block;font-size:9px;letter-spacing:.1em;color:#dff9ff;margin-bottom:5px}': '.info b{display:block;font-size:10px;font-weight:700;letter-spacing:.035em;color:#dff9ff;margin-bottom:5px}',
+            '.phead h2{font-size:22px;margin:0}': '.phead h2{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.01em;margin:0}',
+            '.timer{border:1px solid #6651d0;background:#171537;color:#d4caff;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:900;letter-spacing:.1em}': '.timer{border:1px solid #6651d0;background:#171537;color:#d4caff;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:700;letter-spacing:.03em}',
+            '.lockbox h3{font-size:27px;margin:8px}': '.lockbox h3{font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.01em;margin:8px}',
+            '.auth label{display:block;font-size:9px;font-weight:900;letter-spacing:.1em;color:#8ba6b9;margin-top:14px}': '.auth label{display:block;font-size:10px;font-weight:700;letter-spacing:.03em;color:#8ba6b9;margin-top:14px}',
+            '.about h2{font-size:38px;max-width:850px}': '.about h2{font-family:var(--font-display);font-size:38px;font-weight:700;letter-spacing:-.02em;line-height:1.2;max-width:850px}',
+            'footer{border-top:1px solid #173149;padding:24px 3vw;color:#5f7c92;font-size:9px;letter-spacing:.14em;display:flex;justify-content:space-between}': 'footer{border-top:1px solid #173149;padding:24px 3vw;color:#6f8799;font-size:10px;font-weight:500;letter-spacing:.045em;display:flex;justify-content:space-between}'
+          }
+          for old,new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'missing typography anchor: {old[:90]}')
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          print('JH Project Archive typography anchors updated:',len(replacements))
+          PY
+      - name: Verify typography result
+        run: |
+          set -euo pipefail
+          grep -F 'Segoe UI Variable Display' jh-project-archive/index.html
+          grep -F 'font-weight:700;letter-spacing:.025em' jh-project-archive/index.html
+          if grep -F 'font:14px Inter,system-ui,Segoe UI,sans-serif' jh-project-archive/index.html; then exit 1; fi
+      - name: Commit typography refinement
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add jh-project-archive/index.html
+          git commit -m 'style: refine JH Project Archive typography [skip actions]'
+          git push origin HEAD:main
