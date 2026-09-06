@@ -1,9 +1,10 @@
 // Firebase web config is public connection metadata, not a password or secret.
-// Replace only the REPLACE_* values with Firebase Console > Project settings > Your apps > Web app config.
 export const firebaseConfig = {
-  apiKey: 'REPLACE_API_KEY',
-  authDomain: 'REPLACE_PROJECT_ID.firebaseapp.com',
-  projectId: 'REPLACE_PROJECT_ID',
-  appId: 'REPLACE_APP_ID'
+  apiKey: 'AIzaSyBC5Bix8y62HKhAkav52Cf16uVpArtVRAU',
+  authDomain: 'jh-project-archive.firebaseapp.com',
+  projectId: 'jh-project-archive',
+  storageBucket: 'jh-project-archive.firebasestorage.app',
+  messagingSenderId: '286335636797',
+  appId: '1:286335636797:web:0696b894ba98d873216154'
 };
 export const privacyVersion = '2026-09-06';
