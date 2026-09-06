@@ -4,7 +4,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   try{
     const bolt=P.find(x=>x.id==='bolt-bloom');
     if(bolt){
-      Object.assign(bolt,{ver:'25 Stages',sub:'2D Run-and-Gun Shooter',desc:'BOLT와 BLOOM을 선택해 광산 터널을 달리고 점프·사격으로 적을 돌파하는 별도 2D 런앤건 슈팅 게임.',img:window.JH_THUMBS['bolt-bloom'],liveThumb:false,url:'https://bolt-bloom-tunnel-quest.comicman081.chatgpt.site',note:'TRIAD RUN과 별도 프로젝트. 현재 standalone 빌드는 PLAYABLE STAGES 01—25를 제공하며 공개 플레이 주소는 chatgpt.site.'});
+      Object.assign(bolt,{ver:'25 Stages',sub:'2D Run-and-Gun Shooter',desc:'BOLT와 BLOOM을 선택해 광산 터널을 달리고 점프·사격으로 적을 돌파하는 별도 2D 런앤건 슈팅 게임.',img:window.JH_THUMBS['bolt-bloom'],liveThumb:false,url:'https://bolt-bloom-tunnel-quest.comicman081.chatgpt.site',note:'TRIAD RUN과 완전히 별도 프로젝트. standalone 공개 빌드는 PLAYABLE STAGES 01—25를 제공합니다.'});
       if(typeof render==='function')render(typeof filter==='string'?filter:'all');
     }
   }catch(e){console.error('BOLT BLOOM portfolio override failed',e)}

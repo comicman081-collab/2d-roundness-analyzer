@@ -4,7 +4,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   try{
     const triad=P.find(x=>x.id==='triad-run');
     if(triad){
-      Object.assign(triad,{ver:'V0.8 · 30 Stages',sub:'Tactical Deck-building Card RPG',desc:'캐릭터 3인 로스터와 시작 덱을 구성하고, 전투에서 손패의 행동 카드를 선택해 30스테이지 런을 진행하는 전술 덱빌딩 카드 RPG.',img:window.JH_THUMBS['triad-run'],liveThumb:false,url:'https://comicman081-collab.github.io/TRIAD-RUN/',note:'GitHub canonical runtime TRIAD_RUN_V0_8_MANEQUIN_ASSEMBLY.html. 126장 카드, 30스테이지·3막·보스 10/20/30 구성의 Deck Building RPG.'});
+      Object.assign(triad,{ver:'V0.8',sub:'Deck-building Card Game',desc:'3인 로스터와 시작 덱을 구성하고 손패의 행동 카드를 선택해 스테이지를 공략하는 덱빌딩 카드 게임.',img:window.JH_THUMBS['triad-run'],liveThumb:false,url:'https://comicman081-collab.github.io/TRIAD-RUN/TRIAD_RUN_V0_8_MANEQUIN_ASSEMBLY.html',note:'GitHub README 기준 Deck building game. 실제 실행 파일 TRIAD_RUN_V0_8_MANEQUIN_ASSEMBLY.html을 GitHub Pages에서 직접 엽니다.'});
       if(typeof render==='function')render(typeof filter==='string'?filter:'all');
     }
   }catch(e){console.error('TRIAD portfolio override failed',e)}
