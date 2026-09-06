@@ -1,0 +1,85 @@
+name: One-shot real artifact thumbnails
+
+on:
+  push:
+    paths:
+      - '.github/workflows/_one_shot_real_thumbnails.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Wire actual project screenshots into archive
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('jh-project-archive/index.html')
+          s=p.read_text(encoding='utf-8')
+
+          old='.thumb{height:150px;position:relative}'
+          new='.thumb{height:180px;position:relative;overflow:hidden;background:#050b12}.thumb img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;transition:transform .22s ease,filter .22s ease}.card:hover .thumb img{transform:scale(1.025);filter:brightness(1.05)}.thumb-live{height:180px;overflow:hidden;background:#06101a}.thumb-live iframe{border:0;width:1067px;height:600px;transform:scale(.30);transform-origin:0 0;pointer-events:none;background:#07111a}.art{background-size:cover!important;background-position:center!important}.art:before,.art:after{display:none!important}'
+          if old not in s: raise SystemExit('thumbnail CSS anchor missing')
+          s=s.replace(old,new,1)
+
+          old='<script>\nconst P=['
+          new='''<script src="./thumbs/false-summer.js"></script>\n<script src="./thumbs/sable-circuit.js"></script>\n<script src="./thumbs/bolt-bloom.js"></script>\n<script src="./thumbs/triad-run.js"></script>\n<script src="./thumbs/lumenbound.js"></script>\n<script>\nconst TH=window.JH_THUMBS||{};\nconst P=['''
+          if old not in s: raise SystemExit('project script anchor missing')
+          s=s.replace(old,new,1)
+
+          replacements={
+          "{id:'false-summer',title:'FALSE SUMMER',type:'game',label:'GAME',status:'ITCH.IO',cls:'rel',ver:'Teen 15 Test',sub:'Mystery Romance Visual Novel',desc:'추리와 연애 요소를 중심으로 기억·진실·선택을 따라가는 비주얼 노벨. itch.io 공개 테스트 빌드를 포트폴리오에서 바로 확인합니다.',thumb:'t-false',url:'https://comicman081.itch.io/false-summer-teen15-test',note:'itch.io 공개 테스트 페이지 연결. iframe 정책으로 내부 표시가 제한될 수 있습니다.'}":
+          "{id:'false-summer',title:'FALSE SUMMER',type:'game',label:'GAME',status:'ITCH.IO',cls:'rel',ver:'Teen 15 Test',sub:'Mystery Romance Visual Novel',desc:'추리와 연애 요소를 중심으로 기억·진실·선택을 따라가는 비주얼 노벨. itch.io 공개 테스트 빌드를 포트폴리오에서 바로 확인합니다.',img:TH['false-summer'],url:'https://comicman081.itch.io/false-summer-teen15-test',note:'실제 FALSE SUMMER 해월관 배경 산출물을 썸네일로 사용. itch.io 공개 테스트 페이지 연결.'}",
+          "{id:'sable-circuit',title:'SABLE CIRCUIT',type:'game',label:'GAME',status:'PRIVATE',cls:'wip',ver:'Prototype',sub:'Top-down Action',desc:'8방향 이동과 전투 VFX를 반복 검수하며 제작 중인 액션 프로젝트.',thumb:'t-sable',url:'',note:'현재 비공개 빌드.'}":
+          "{id:'sable-circuit',title:'SABLE CIRCUIT',type:'game',label:'GAME',status:'PRIVATE',cls:'wip',ver:'Prototype',sub:'Top-down Action',desc:'8방향 이동과 전투 VFX를 반복 검수하며 제작 중인 액션 프로젝트.',img:TH['sable-circuit'],url:'',note:'실제 SITE-7 전투 런타임 화면을 썸네일로 사용. 현재 빌드는 비공개.'}",
+          "{id:'nikke-growth-calculator',title:'NIKKE Growth Calculator',type:'calculator',label:'CALCULATOR',status:'RELEASE',cls:'rel',ver:'V34.7.20',sub:'Growth · Raid · Simulation',desc:'성장 계산, 정밀 계산, 전투 시뮬레이션과 5덱 구성을 다루는 웹 계산기.',thumb:'t-nikke',url:'https://nikke-growth-calculator.breezy-mum.workers.dev',note:'공유 웹판 BlaBla 공개 URL 동기화는 개인정보 보호를 위해 비활성화 상태.'}":
+          "{id:'nikke-growth-calculator',title:'NIKKE Growth Calculator',type:'calculator',label:'CALCULATOR',status:'RELEASE',cls:'rel',ver:'V34.7.20',sub:'Growth · Raid · Simulation',desc:'성장 계산, 정밀 계산, 전투 시뮬레이션과 5덱 구성을 다루는 웹 계산기.',img:'https://raw.githubusercontent.com/comicman081-collab/nikke-growth-calculator/main/V34718_PRECISION_OUTPUT_QA.png',url:'https://nikke-growth-calculator.breezy-mum.workers.dev',note:'실제 V34.7.20 정밀 계산 QA 화면을 썸네일로 사용. 공유 웹판 BlaBla 공개 URL 동기화는 개인정보 보호를 위해 비활성화 상태.'}",
+          "{id:'2d-roundness-analyzer',title:'2D Roundness Analyzer',type:'calculator',label:'CALCULATOR',status:'RELEASE',cls:'rel',ver:'v3.4.1',sub:'Measure · Compare · Visualize',desc:'이미지에서 원형률과 원형성을 측정하고 결과를 시각화하는 브라우저 도구.',thumb:'t-round',url:'https://comicman081-collab.github.io/2d-roundness-analyzer/',note:'저작권 표기와 TabClose 수정이 반영된 v3.4.1.'}":
+          "{id:'2d-roundness-analyzer',title:'2D Roundness Analyzer',type:'calculator',label:'CALCULATOR',status:'RELEASE',cls:'rel',ver:'v3.4.1',sub:'Measure · Compare · Visualize',desc:'이미지에서 원형률과 원형성을 측정하고 결과를 시각화하는 브라우저 도구.',liveThumb:true,url:'https://comicman081-collab.github.io/2d-roundness-analyzer/',note:'가짜 그림 대신 배포 중인 v3.4.1 실제 UI를 라이브 썸네일로 표시.'}",
+          "{id:'triad-run',title:'TRIAD RUN',type:'game',label:'GAME',status:'WEB',cls:'rel',ver:'GitHub Pages',sub:'Run-and-Gun Shooter',desc:'빠른 이동과 사격을 중심으로 플레이하는 런앤건 슈팅 게임. GitHub Pages의 실제 웹 빌드를 포트폴리오에서 바로 실행합니다.',thumb:'t-triad',url:'https://comicman081-collab.github.io/TRIAD-RUN/',note:'GitHub 저장소 comicman081-collab/TRIAD-RUN의 공개 Pages 빌드 연결.'}":
+          "{id:'triad-run',title:'TRIAD RUN',type:'game',label:'GAME',status:'WEB',cls:'rel',ver:'GitHub Pages',sub:'Deck-building Turn RPG',desc:'덱 구성과 행동 카드를 사용해 전투를 진행하는 턴제 RPG 프로젝트.',img:TH['triad-run'],url:'https://comicman081-collab.github.io/TRIAD-RUN/',note:'실제 STAGE 41 턴 RPG 전투 화면을 썸네일로 사용. GitHub Pages 공개 빌드 연결.'}",
+          "{id:'lumenbound',title:'LUMENBOUND',type:'experiment',label:'EXPERIMENT',status:'WIP',cls:'wip',ver:'Development',sub:'Tactics of the Last Line',desc:'전술과 비주얼 시스템을 실험하는 대형 프로젝트.',thumb:'t-lumen',url:'',note:'승인된 배포본만 포트폴리오에 연결 예정.'}":
+          "{id:'lumenbound',title:'LUMENBOUND',type:'game',label:'GAME',status:'WEB',cls:'rel',ver:'GitHub Pages',sub:'Vertical Slide SRPG',desc:'챕터 탐색과 전술 전투를 결합한 SRPG 프로젝트.',img:TH['lumenbound'],url:'https://comicman081-collab.github.io/LUMENBOUND-TACTICS-OF-THE-LAST-LINE/',note:'실제 Chapter 1 탐색 맵 런타임 화면을 썸네일로 사용. GitHub Pages 공개 빌드 연결.'}"
+          }
+          for a,b in replacements.items():
+              if a not in s: raise SystemExit('project anchor missing: '+a[:40])
+              s=s.replace(a,b,1)
+
+          bolt="{id:'bolt-bloom',title:'BOLT & BLOOM',type:'game',label:'GAME',status:'WEB',cls:'rel',ver:'3 / 25 Stages',sub:'Run-and-Gun Shooter',desc:'광산 터널을 질주하며 적을 쓰러뜨리는 2D 런앤건 슈팅 게임.',img:TH['bolt-bloom'],url:'https://bolt-bloom-tunnel-quest.comicman081.chatgpt.site',note:'실제 BOLT & BLOOM: TUNNEL QUEST 타이틀 화면을 썸네일로 사용. 공개 플레이 빌드 연결.'},\n"
+          marker="{id:'lumenbound',title:'LUMENBOUND'"
+          i=s.find(marker)
+          if i<0: raise SystemExit('bolt insertion anchor missing')
+          s=s[:i]+bolt+s[i:]
+
+          old="const badge=(x,c='')=>`<span class=\"badge ${c}\">${x}</span>`;\nfunction render(f='all'){filter=f;let a=P.filter(x=>f==='all'||x.type===f);$('#count').textContent=a.length;$('#grid').innerHTML=a.map(x=>`<article class=\"card\" data-id=\"${x.id}\"><div class=\"thumb ${x.thumb}\"></div><div class=\"body\"><div class=\"badges\">${badge(x.label)}${badge(x.status,x.cls)}</div><h3>${x.title}</h3><div class=\"meta\">${x.sub} · ${x.ver}</div><p>${x.desc}</p></div></article>`).join('');$$('.card').forEach(c=>c.onclick=()=>openProject(c.dataset.id));}"
+          new="const badge=(x,c='')=>`<span class=\"badge ${c}\">${x}</span>`;\nconst thumbHtml=x=>x.liveThumb?`<div class=\"thumb thumb-live\"><iframe loading=\"lazy\" src=\"${x.url}\" tabindex=\"-1\" aria-hidden=\"true\"></iframe></div>`:`<div class=\"thumb\"><img src=\"${x.img||''}\" alt=\"${x.title} 실제 산출물 화면\" loading=\"lazy\" decoding=\"async\"></div>`;\nfunction render(f='all'){filter=f;let a=P.filter(x=>f==='all'||x.type===f);$('#count').textContent=a.length;$('#grid').innerHTML=a.map(x=>`<article class=\"card\" data-id=\"${x.id}\">${thumbHtml(x)}<div class=\"body\"><div class=\"badges\">${badge(x.label)}${badge(x.status,x.cls)}</div><h3>${x.title}</h3><div class=\"meta\">${x.sub} · ${x.ver}</div><p>${x.desc}</p></div></article>`).join('');$$('.card').forEach(c=>c.onclick=()=>openProject(c.dataset.id));}"
+          if old not in s: raise SystemExit('render anchor missing')
+          s=s.replace(old,new,1)
+
+          old="$$('[data-nav]').forEach(b=>b.onclick=()=>{$$('[data-nav]').forEach(x=>x.classList.remove('on'));"
+          new="const heroArt=$('.art');if(heroArt&&TH['false-summer'])heroArt.style.backgroundImage=`linear-gradient(90deg,rgba(4,12,20,.08),rgba(4,12,20,.02)),url(${TH['false-summer']})`;\n$$('[data-nav]').forEach(b=>b.onclick=()=>{$$('[data-nav]').forEach(x=>x.classList.remove('on'));"
+          if old not in s: raise SystemExit('hero anchor missing')
+          s=s.replace(old,new,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Basic content verification
+        run: |
+          grep -F "BOLT & BLOOM" jh-project-archive/index.html
+          grep -F "Deck-building Turn RPG" jh-project-archive/index.html
+          grep -F "V34718_PRECISION_OUTPUT_QA.png" jh-project-archive/index.html
+          grep -F "thumb-live" jh-project-archive/index.html
+          grep -F "thumbs/false-summer.js" jh-project-archive/index.html
+      - name: Commit archive thumbnail update
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add jh-project-archive/index.html
+          git commit -m 'portfolio: use actual artifact thumbnails [skip actions]'
+          git push origin HEAD:main
