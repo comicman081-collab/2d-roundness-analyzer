@@ -1,33 +1,24 @@
-# JH PROJECT ARCHIVE — zero-cost backend
+# JH PROJECT ARCHIVE — protected-build gateway (deferred)
 
-Target free URL: `https://jh-project-archive.<workers-subdomain>.workers.dev`
+The old custom ID/password Worker auth has been disabled.
+
+## Current zero-cost member system
+
+Membership now uses:
+
+- **Firebase Authentication — Spark plan** for email/password signup, login persistence, email verification, and password reset.
+- **Cloud Firestore — free quota** for username, nickname, age-14 confirmation, privacy-consent record, Full Access state, administrator state, and privacy requests.
+- **GitHub Pages** for the public portfolio UI.
+
+See `../jh-project-archive/auth/AUTH_SETUP.md` and `../jh-project-archive/auth/firestore.rules`.
+
+## Why this folder remains
+
+A Worker can later be used only as a protected-build gateway for non-public game assets. That phase is intentionally not enabled yet because current membership/authentication does not need a paid service or a Worker deployment.
 
 ## Cost rule
 
-- Cloudflare Workers **Free** plan only.
 - Do not enable Workers Paid.
-- No paid domain.
-- No D1/R2 is required for the initial friend-only access model.
-- If the Workers Free request limit is exceeded, access should fail rather than upgrade to a paid plan.
-
-## Secrets
-
-Set these as Cloudflare Worker secrets, never commit their values:
-
-- `SESSION_SECRET` — long random signing secret.
-- `ADMIN_ID`
-- `ADMIN_PASSWORD_SHA256`
-- `FRIEND_ID`
-- `FRIEND_PASSWORD_SHA256`
-- `FULL_ACCESS_CODE_SHA256`
-
-Generate password hashes locally with SHA-256. The public repository stores hashes only as Worker secrets; the passwords/access code are not placed in HTML or GitHub source.
-
-## Route model
-
-- `/` and public static assets: public portfolio UI.
-- `/api/login`, `/api/unlock`, `/api/session`: authentication.
-- `/preview/<project>/...`: signed 30-second preview route.
-- `/full/<project>/...`: Full Access cookie required.
-
-The Worker uses Static Assets with `run_worker_first` only for `/api/*`, `/preview/*`, and `/full/*`, so ordinary static assets remain on the free static-asset path.
+- Do not attach a paid domain.
+- Do not store plaintext passwords or access codes in GitHub.
+- If a future protected-build gateway is enabled, it must remain on a free/no-metered-billing design or fail closed when a free quota is reached.
