@@ -1,0 +1,38 @@
+name: One-shot wire Firebase auth UI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/_one_shot_wire_firebase_auth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Wire auth module
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('jh-project-archive/index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<script type="module" src="./auth-v3.js?v=20260906a"></script>'
+          if marker not in s:
+              s=s.replace('</body></html>', marker+'</body></html>')
+          s=s.replace('Full Access 로그인은 비밀번호를 HTML에 넣지 않고 무료 Cloudflare Worker로 분리해 보호하도록 설계합니다. 유료 도메인, 유료 서버, 유료 데이터베이스는 사용하지 않습니다.', '회원가입·이메일 인증·PW 재설정은 Firebase Spark 무료 플랜과 Firestore 보안 규칙을 사용합니다. 만 14세 이상만 가입할 수 있으며 유료 도메인·유료 서버·유료 데이터베이스는 사용하지 않습니다.')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add jh-project-archive/index.html
+          git commit -m 'auth: wire Firebase signup and login UI [skip actions]'
+          git push origin HEAD:main
